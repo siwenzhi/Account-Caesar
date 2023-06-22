@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Account-Caesar</title>
+
+    <!-- 第三方 -->
+    <script src="./js/vue@3.2.36.global.js"></script>
+    <link rel="stylesheet" href="./css/element-plus@2.3.6.css" />
+    <script src="./js/element-plus@2.3.6.full.js"></script>
+    <script src="./js/axios.min.js"></script>
+
+    <!-- 自定义 -->
+    <link rel="stylesheet" href="./css/my.css" />
+    <script src="./js/CaesarUtil.js"></script>
+    <script src="./js//utils/DateTimeUtil.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <el-row>
+            <el-col :span="16">
+                <el-input v-model="reomteFile.url" placeholder="文件地址" clearable />
+            </el-col>
+
+            <el-col :span="8">
+                &nbsp;
+                <el-button type="primary" @click="GetRemoteFile">Get</el-button>
+                <el-button type="primary" @click="CaesarDecrypt">解密</el-button>
+
+
+                <span>
+                    <el-divider direction="vertical" border-style="dashed" />
+                </span>
+
+                <el-button type="primary" @click="CaesarDecrypt">自动加密: </el-button>
+
+                <span>
+                    &nbsp;
+                </span>
+
+                <el-switch v-model="autoConvert" class="ml-2" :active-value="true" :inactive-value="false"
+                    active-text="开" inactive-text="关" style="
+              --el-switch-on-color: #13ce66;
+              --el-switch-off-color: #ff4949;
+            " />
+            </el-col>
+        </el-row>
+
+
+        <el-row :gutter="20">
+            <el-col :span="12">
+                <div>
+                    <el-divider content-position="left">抹除</el-divider>
+                    <el-checkbox-group v-model="previewFlag">
+                        <el-checkbox label="1"> offset</el-checkbox>
+                        <el-checkbox label="2"> 加密原文</el-checkbox>
+                    </el-checkbox-group>
+
+                    <!-- <el-divider content-position="left">删除</el-divider> -->
+
+                    <span>
+                        <br />
+                        <el-button @click="CopyToClipboar" large="small">复制</el-button>
+                        <el-button @click="ExportJsonFile" large="small">下载</el-button>
+                    </span>
+                </div>
+
+                <div>
+                    <el-divider content-position="left">实时JSON</el-divider>
+                    <el-input disabled type="textarea" :autosize="{ minRows: 2 }" placeholder="请输入内容"
+                        v-model="previewJSON">
+                    </el-input>
+                </div>
+            </el-col>
+
+            <el-col :span="12">
+                <div>
+                    <el-form ref="form" :model="accountInfo" label-width="80px">
+                        <el-divider content-position="left">账号信息</el-divider>
+
+                        <el-form-item label="">
+                            <div>
+                                <el-input placeholder="请输入内容" v-model="accountInfo.title">
+                                    <template #prepend>标题</template>
+                                </el-input>
+                            </div>
+                        </el-form-item>
+
+                        <el-form-item label="">
+                            <div>
+                                <el-input placeholder="请输入内容" v-model="accountInfo.site">
+                                    <template #prepend>网址</template>
+                                </el-input>
+                            </div>
+                        </el-form-item>
+
+                        <el-form-item label="">
+                            <div>
+                                <span>创建时间: </span>
+                                <el-date-picker v-model="accountInfo.createTime" type="datetime" placeholder="创建日期"
+                                    format="YYYY-MM-DD HH:mm:ss" value-format="YYYY-MM-DD HH:mm:ss" />
+                            </div>
+                        </el-form-item>
+
+                        <el-form-item label="">
+                            <div>
+                                <el-input type="textarea" :autosize="{ minRows: 2 }" placeholder="备注"
+                                    v-model="accountInfo.notes">
+                                </el-input>
+                            </div>
+                        </el-form-item>
+
+                        <el-form-item label="">
+                            <div>
+                                <el-input placeholder="请输入内容" v-model="accountInfo.method" disabled>
+                                    <template #prepend>方法</template>
+                                </el-input>
+                            </div>
+                        </el-form-item>
+
+                        <!-- <el-form-item label="">
+                            <div>
+                                <el-input placeholder="偏移值, 整数" v-model="accountInfo.offset">
+                                    <template #prepend>偏移值</template>
+                                </el-input>
+                            </div>
+                        </el-form-item> -->
+
+                        <el-form-item label="">
+                            <div>
+                                <span>偏移值: </span>
+                                <el-input-number v-model="accountInfo.offset" :min="1" :max="25" />
+                            </div>
+                        </el-form-item>
+
+                        <el-divider content-position="left">字段</el-divider>
+
+                        <el-form-item v-for="item in accountInfo.items" :key="item.index">
+                            <div style="display: flex; align-items: center">
+                                <el-input placeholder="请输入内容" v-model="item.value" class="input-with-select">
+                                    <template #prepend>
+                                        <el-select class="prepend-select" @change="tttt" v-model="item.label" filterable
+                                            allow-create clearable placeholder="请选择">
+                                            <!-- <el-option v-for="opt in fieldOptinos" :key="opt.value" :label="opt.value" :value="opt.value"></el-option> -->
+                                            <el-option v-for="opt in fieldOptinos" :key="opt" :label="opt"
+                                                :value="opt"></el-option>
+                                        </el-select>
+                                    </template>
+                                </el-input>
+
+                                <span>
+                                    <el-divider direction="vertical" border-style="dashed" />
+                                </span>
+
+                                <span>
+                                    <!-- <el-divider direction="vertical" border-style="dashed" /> -->
+                                    <el-checkbox v-model="item.flag" label="加密" border></el-checkbox>
+                                </span>
+
+                                <span style="margin-left: 10px">
+                                    <el-button @click.prevent="RemoveItem(item)">删除</el-button>
+                                </span>
+                            </div>
+                        </el-form-item>
+
+                        <el-divider content-position="left">操作</el-divider>
+
+                        <el-form-item>
+                            <el-button @click="AddItem">添加字段</el-button>
+                            <el-button @click="ResetForm">清空表单</el-button>
+                            <!-- <el-button @click="EncryptionCaesar">转换</el-button> -->
+                        </el-form-item>
+                    </el-form>
+                </div>
+            </el-col>
+        </el-row>
+    </div>
+
+    <script src="./vue.js"></script>
+</body>
+
+</html>
