@@ -21,9 +21,6 @@
 
 <body>
     <div id="app">
-
-
-
         <el-row>
             <el-col :span="14">
                 <el-input v-model="reomteFile.url" placeholder="文件地址" clearable />
@@ -45,24 +42,19 @@
 
                 <el-button @click="OpenSite('./README.md', 2)">帮助</el-button>
 
-
                 <span>
                     <el-divider direction="vertical" border-style="dashed" />
                 </span>
 
                 <el-button>自动: </el-button>
 
-                <span>
-                    &nbsp;
-                </span>
+                <span> &nbsp; </span>
 
                 <el-switch v-model="autoEncryption" class="ml-2" :active-value="true" :inactive-value="false"
                     active-text="加密" inactive-text="解密" style="
               --el-switch-on-color: #13ce66;
               --el-switch-off-color: #ff4949;
             " />
-
-
             </el-col>
         </el-row>
 
@@ -70,7 +62,7 @@
             <el-col :span="10">
                 <div>
                     <el-divider content-position="left">抹除</el-divider>
-                    <el-checkbox-group v-model="previewFlag" style="display: inline-block;">
+                    <el-checkbox-group v-model="previewFlag" style="display: inline-block">
                         <el-checkbox label="1"> offset</el-checkbox>
                         <el-checkbox label="2"> 加密原文</el-checkbox>
                     </el-checkbox-group>
@@ -80,10 +72,29 @@
                     </span>
 
                     <span>
-                        <el-button @click="CopyToClipboar(previewJSON)" large="small">复制</el-button>
-                        <el-button @click="ExportJsonFile" large="small">下载</el-button>
+                        <el-button @click="CopyToClipboar(previewJSON)" size="small">复制</el-button>
+                        <el-button @click="ExportJsonFile" size="small">下载</el-button>
                     </span>
                 </div>
+
+                <!-- <div>
+                    <el-divider content-position="left">offset助记</el-divider>
+
+                    <span>  </span>
+
+                    <el-button size="small">将offset存储为, 真实偏移值: {{accountInfo.offset}}</el-button>
+
+                    <span>±</span>
+
+                    <span>
+                        <el-input-number v-model="assistOffset" size="small" style="display: inline-block;" />
+                    </span>
+
+                    <span>=</span>
+                    <el-button size="small">{{accountInfo.offset+assistOffset}}</el-button>
+
+                    <el-button @click="ExportJsonFile" size="small">下载</el-button>
+                </div> -->
 
                 <div>
                     <el-divider content-position="left">实时JSON</el-divider>
@@ -114,7 +125,6 @@
                             </div>
 
                             <span>
-
                                 <el-divider direction="vertical" border-style="dashed" />
                             </span>
 
@@ -123,10 +133,6 @@
 
                                 <el-button @click="OpenSite(accountInfo.site, 1)">Go</el-button>
                             </span>
-
-
-
-
                         </el-form-item>
 
                         <el-form-item label="">
@@ -167,8 +173,6 @@
                                 <el-input-number v-model="accountInfo.offset" :min="1" :max="25" />
 
                                 <span><el-button type="primary" @click="CaesarDecrypt">解密</el-button></span>
-
-
                             </div>
                         </el-form-item>
 

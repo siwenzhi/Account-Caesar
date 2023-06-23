@@ -21,11 +21,14 @@ const vue3Composition = {
       ],
     };
 
+
+
     const reomteFile = reactive({
       url: null,
     });
 
     let accountInfo = reactive(FormTemplate);
+    let assistOffsetRef = ref(0)
 
     // const fieldOptinos=ref(["1", "2"])
     // const fieldOptinos=ref([{value:"账号"}, {value: "密码"}])
@@ -61,9 +64,7 @@ const vue3Composition = {
         }
 
         accountInfo.updateTime = GetDateTime.dateTime();
-
       }
-
 
       let temp = JSON.parse(JSON.stringify(accountInfo));
 
@@ -144,6 +145,33 @@ const vue3Composition = {
     const ExportJsonFile = () => {
       // console.log(123)
 
+      // let temp = JSON.parse(JSON.stringify(accountInfo));
+      // if (flag == 2) {
+      //   for (let i = 0; i < temp.items.length; i++) {
+      //     let item = temp.items[i];
+      //     if (item.flag == true && previewFlag.value.indexOf("2") != -1) {
+      //       item.value = "";
+      //     }
+      //   }
+      //   if (previewFlag.value.indexOf("1") != -1) {
+      //     temp.offset = "";
+      //   }
+      //   temp.offset=temp.offset + assistOffsetRef.value;
+      //   return JSON.stringify(temp, null, 4);
+      // }
+
+      let postfix = "";
+
+      if (previewFlag.value.length == 0) {
+        postfix = "-[all]";
+      } else if (previewFlag.value.length == 2) {
+        postfix = "-[erase-offset+value]";
+      } else if (previewFlag.value.indexOf("1") != -1) {
+        postfix = "-[erase-offset]";
+      } else if (previewFlag.value.indexOf("2") != -1) {
+        postfix = "-[erase-value]";
+      }
+
       try {
         let blob = new Blob([previewJSON.value], { type: "text/json" });
         // window.navigator.msSaveBlob(blob, "filenam" + '.json');
@@ -154,7 +182,7 @@ const vue3Composition = {
         // 设置a标签的href属性为URL对象的URL
         a.href = url;
         // 设置a标签的download属性为文件名
-        a.download = accountInfo.title + ".json";
+        a.download = accountInfo.title + postfix + ".json";
         // 模拟点击a标签
         a.click();
         // 释放URL对象
@@ -222,7 +250,6 @@ const vue3Composition = {
     };
 
     const OpenSite = (url, flag) => {
-
       if (flag == 1) {
         // 定义正则表达式，判断是否包含"http://"或"https://"
         var regExp = /^https?:\/\//i;
@@ -245,6 +272,7 @@ const vue3Composition = {
       previewJSON: previewJSON,
       previewFlag: previewFlag,
       autoEncryption: autoEncryption,
+      assistOffset: assistOffsetRef,
       RemoveItem,
       AddItem,
       ResetForm,
