@@ -21,6 +21,9 @@
 
 <body>
     <div id="app">
+
+
+
         <el-row>
             <el-col :span="16">
                 <el-input v-model="reomteFile.url" placeholder="文件地址" clearable />
@@ -29,42 +32,46 @@
             <el-col :span="8">
                 &nbsp;
                 <el-button type="primary" @click="GetRemoteFile">Get</el-button>
-                <el-button type="primary" @click="CaesarDecrypt">解密</el-button>
+
+                <span>
+                    <el-divider direction="vertical" border-style="dashed" />
+                </span>
+                <el-button @click="CaesarDecrypt">解密</el-button>
 
 
                 <span>
                     <el-divider direction="vertical" border-style="dashed" />
                 </span>
 
-                <el-button type="primary" @click="CaesarDecrypt">自动加密: </el-button>
+                <el-button>自动: </el-button>
 
                 <span>
                     &nbsp;
                 </span>
 
-                <el-switch v-model="autoConvert" class="ml-2" :active-value="true" :inactive-value="false"
-                    active-text="开" inactive-text="关" style="
+                <el-switch v-model="autoEncryption" class="ml-2" :active-value="true" :inactive-value="false"
+                    active-text="加密" inactive-text="解密" style="
               --el-switch-on-color: #13ce66;
               --el-switch-off-color: #ff4949;
             " />
             </el-col>
         </el-row>
 
-
         <el-row :gutter="20">
-            <el-col :span="12">
+            <el-col :span="10">
                 <div>
                     <el-divider content-position="left">抹除</el-divider>
-                    <el-checkbox-group v-model="previewFlag">
+                    <el-checkbox-group v-model="previewFlag" style="display: inline-block;">
                         <el-checkbox label="1"> offset</el-checkbox>
                         <el-checkbox label="2"> 加密原文</el-checkbox>
                     </el-checkbox-group>
 
-                    <!-- <el-divider content-position="left">删除</el-divider> -->
+                    <span>
+                        <el-divider direction="vertical" border-style="dashed" />
+                    </span>
 
                     <span>
-                        <br />
-                        <el-button @click="CopyToClipboar" large="small">复制</el-button>
+                        <el-button @click="CopyToClipboar(previewJSON)" large="small">复制</el-button>
                         <el-button @click="ExportJsonFile" large="small">下载</el-button>
                     </span>
                 </div>
@@ -77,14 +84,14 @@
                 </div>
             </el-col>
 
-            <el-col :span="12">
+            <el-col :span="14">
                 <div>
                     <el-form ref="form" :model="accountInfo" label-width="80px">
                         <el-divider content-position="left">账号信息</el-divider>
 
                         <el-form-item label="">
                             <div>
-                                <el-input placeholder="请输入内容" v-model="accountInfo.title">
+                                <el-input placeholder="请输入内容" v-model="accountInfo.title" clearable>
                                     <template #prepend>标题</template>
                                 </el-input>
                             </div>
@@ -92,10 +99,25 @@
 
                         <el-form-item label="">
                             <div>
-                                <el-input placeholder="请输入内容" v-model="accountInfo.site">
+                                <el-input placeholder="请输入内容" v-model="accountInfo.site" clearable>
                                     <template #prepend>网址</template>
                                 </el-input>
                             </div>
+
+                            <span>
+
+                                <el-divider direction="vertical" border-style="dashed" />
+                            </span>
+
+                            <span>
+                                <el-button @click="CopyToClipboar(accountInfo.site)">Copy</el-button>
+
+                                <el-button @click="OpenSite(accountInfo.site)">Go</el-button>
+                            </span>
+
+
+
+
                         </el-form-item>
 
                         <el-form-item label="">
@@ -109,7 +131,7 @@
                         <el-form-item label="">
                             <div>
                                 <el-input type="textarea" :autosize="{ minRows: 2 }" placeholder="备注"
-                                    v-model="accountInfo.notes">
+                                    v-model="accountInfo.notes" clearable>
                                 </el-input>
                             </div>
                         </el-form-item>
@@ -134,6 +156,10 @@
                             <div>
                                 <span>偏移值: </span>
                                 <el-input-number v-model="accountInfo.offset" :min="1" :max="25" />
+
+                                <span><el-button type="primary" @click="CaesarDecrypt">解密</el-button></span>
+
+
                             </div>
                         </el-form-item>
 
@@ -141,7 +167,7 @@
 
                         <el-form-item v-for="item in accountInfo.items" :key="item.index">
                             <div style="display: flex; align-items: center">
-                                <el-input placeholder="请输入内容" v-model="item.value" class="input-with-select">
+                                <el-input placeholder="请输入内容" v-model="item.value" class="input-with-select" clearable>
                                     <template #prepend>
                                         <el-select class="prepend-select" @change="tttt" v-model="item.label" filterable
                                             allow-create clearable placeholder="请选择">
@@ -159,6 +185,10 @@
                                 <span>
                                     <!-- <el-divider direction="vertical" border-style="dashed" /> -->
                                     <el-checkbox v-model="item.flag" label="加密" border></el-checkbox>
+                                </span>
+
+                                <span style="margin-left: 10px">
+                                    <el-button @click.prevent="CopyToClipboar(item.value)">Copy</el-button>
                                 </span>
 
                                 <span style="margin-left: 10px">

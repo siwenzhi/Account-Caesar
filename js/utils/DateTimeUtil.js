@@ -27,7 +27,7 @@ const GetDateTime = {
             ":" +
             addZero(second);
 
-        console.log(time)
+        // console.log(time)
         return time;
     }
     

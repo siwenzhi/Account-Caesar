@@ -40,20 +40,14 @@ const vue3Composition = {
 
     let previewFlag = ref([]);
 
-    // watchEffect(() => {
-    //     // accountInfo.title="!23"
-    //     console.log(2)
-
-    // });
-
-    let autoConvert = ref(true);
+    let autoEncryption = ref(true);
 
     // 处理预览同时对串进行偏移加密
     previewJSON = computed(() => {
       // console.log(previewFlag.value);
       // console.log("1?", previewFlag.value.indexOf("1"))
 
-      if (autoConvert.value == true) {
+      if (autoEncryption.value == true) {
         for (let i = 0; i < accountInfo.items.length; i++) {
           let item = accountInfo.items[i];
           // 这里打开的话，会导致拉取远程解密时加密值会被value的空串覆盖掉(拉取后还没解密，这里就侦听到了)
@@ -125,15 +119,23 @@ const vue3Composition = {
           );
         }
       }
+
+      ElementPlus.ElNotification({
+        message: "转换完毕",
+        position: "top-left",
+        type: "success",
+        duration: 500,
+      });
     };
 
-    const CopyToClipboar = async () => {
-      await navigator.clipboard.writeText(previewJSON.value);
-      ElementPlus.ElMessage({
+    const CopyToClipboar = async (text) => {
+      await navigator.clipboard.writeText(text);
+
+      ElementPlus.ElNotification({
         message: "已复制到剪贴板",
-        showClose: true,
-        duration: 1000,
+        position: "top-left",
         type: "success",
+        duration: 500,
       });
     };
 
@@ -160,29 +162,38 @@ const vue3Composition = {
         // 当用户点击下载链接后，浏览器会自动下载文件并销毁a标签。这是因为a标签的download属性告诉浏览器要下载文件，
         // 而不是在当前页面打开它。浏览器会自动处理下载请求，下载文件并销毁a标签，以确保不会对页面性能产生负面影响。
       } catch (e) {
-        ElementPlus.ElMessage({
+        ElementPlus.ElNotification({
           message: "异常: " + e,
-          showClose: true,
-          duration: 1000,
           type: "error",
+          duration: 0,
         });
         console.log(e);
       }
     };
 
     const GetRemoteFile = async () => {
-      autoConvert.value = false;
+      autoEncryption.value = false;
+      if (reomteFile.url == null || reomteFile.url == "") {
+        ElementPlus.ElNotification({
+          message: "地址不可为空",
+          position: "top-left",
+          type: "error",
+          duration: 3000,
+        });
+
+        return;
+      }
       await axios
         .get(reomteFile.url)
         .then((res) => {
           // let temp = JSON.parse(JSON.stringify(res.data));
           // accountInfo = reactive(temp)
 
-          ElementPlus.ElMessage({
+          ElementPlus.ElNotification({
             message: "拉取成功, 自动转换中···",
-            showClose: true,
-            duration: 500,
+            position: "top-left",
             type: "success",
+            duration: 500,
           });
 
           accountInfo.title = res.data.title;
@@ -193,25 +204,30 @@ const vue3Composition = {
           accountInfo.createTime = res.data.createTime;
           accountInfo.updateTime = res.data.updateTime;
           accountInfo.items = res.data.items;
+
+          CaesarDecrypt();
         })
         .catch(function (error) {
-          ElementPlus.ElMessage({
+          ElementPlus.ElNotification({
             message: "异常: " + error,
-            showClose: true,
-            duration: 1000,
+            position: "top-left",
+
             type: "error",
+            duration: 0,
           });
           console.log(error);
         });
+    };
 
-      CaesarDecrypt();
+    const OpenSite = (url) => {
+      // 定义正则表达式，判断是否包含"http://"或"https://"
+      var regExp = /^https?:\/\//i;
+      // 如果没有匹配到，则添加"http://"部分
+      if (!regExp.test(url)) {
+        url = "http://" + url;
+      }
 
-      ElementPlus.ElMessage({
-        message: "转换完毕",
-        showClose: true,
-        duration: 500,
-        type: "success",
-      });
+      window.open(url);
     };
 
     const tttt = (v) => {
@@ -224,7 +240,7 @@ const vue3Composition = {
       fieldOptinos: fieldOptinos,
       previewJSON: previewJSON,
       previewFlag: previewFlag,
-      autoConvert: autoConvert,
+      autoEncryption: autoEncryption,
       RemoveItem,
       AddItem,
       ResetForm,
@@ -233,6 +249,7 @@ const vue3Composition = {
       CopyToClipboar,
       ExportJsonFile,
       GetRemoteFile,
+      OpenSite,
       tttt,
     };
   },
