@@ -59,9 +59,11 @@ const vue3Composition = {
             );
           }
         }
+
+        accountInfo.updateTime = GetDateTime.dateTime();
+
       }
 
-      accountInfo.updateTime = GetDateTime.dateTime();
 
       let temp = JSON.parse(JSON.stringify(accountInfo));
 
