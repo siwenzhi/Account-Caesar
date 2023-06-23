@@ -219,14 +219,16 @@ const vue3Composition = {
         });
     };
 
-    const OpenSite = (url) => {
-      // 定义正则表达式，判断是否包含"http://"或"https://"
-      var regExp = /^https?:\/\//i;
-      // 如果没有匹配到，则添加"http://"部分
-      if (!regExp.test(url)) {
-        url = "http://" + url;
-      }
+    const OpenSite = (url, flag) => {
 
+      if (flag == 1) {
+        // 定义正则表达式，判断是否包含"http://"或"https://"
+        var regExp = /^https?:\/\//i;
+        // 如果没有匹配到，则添加"http://"部分
+        if (!regExp.test(url)) {
+          url = "http://" + url;
+        }
+      }
       window.open(url);
     };
 

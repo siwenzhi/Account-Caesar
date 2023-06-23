@@ -25,18 +25,25 @@
 
 
         <el-row>
-            <el-col :span="16">
+            <el-col :span="14">
                 <el-input v-model="reomteFile.url" placeholder="文件地址" clearable />
             </el-col>
 
-            <el-col :span="8">
+            <el-col :span="10">
                 &nbsp;
                 <el-button type="primary" @click="GetRemoteFile">Get</el-button>
 
                 <span>
                     <el-divider direction="vertical" border-style="dashed" />
                 </span>
+
                 <el-button @click="CaesarDecrypt">解密</el-button>
+
+                <span>
+                    <el-divider direction="vertical" border-style="dashed" />
+                </span>
+
+                <el-button @click="OpenSite('./README.md', 2)">帮助</el-button>
 
 
                 <span>
@@ -54,6 +61,8 @@
               --el-switch-on-color: #13ce66;
               --el-switch-off-color: #ff4949;
             " />
+
+
             </el-col>
         </el-row>
 
@@ -112,7 +121,7 @@
                             <span>
                                 <el-button @click="CopyToClipboar(accountInfo.site)">Copy</el-button>
 
-                                <el-button @click="OpenSite(accountInfo.site)">Go</el-button>
+                                <el-button @click="OpenSite(accountInfo.site, 1)">Go</el-button>
                             </span>
 
 
