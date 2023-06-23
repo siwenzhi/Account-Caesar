@@ -39,7 +39,7 @@
 
 ### 数据模型
 
-```json
+```javascript
 
 accountInfo{
     title
